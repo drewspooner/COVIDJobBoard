@@ -1,0 +1,123 @@
+body,html {
+        height: 100%;
+        margin:0;
+        padding: 0;
+        font-family: "Roboto", sans-serif;
+
+    }
+
+
+
+.pagecontent{
+        background: url("{% static 'home/img/Artboard-2.jpg' %}");
+        background-size: cover;
+        background-position: center center;
+}
+    
+    article{
+        font-size: 200%;
+        color: white;
+        text-shadow: 3px 3px rgba(0, 0, 0, 0.62);
+        -webkit-text-stroke-width: 1px;
+        -webkit-text-stroke-color: gray;
+        
+    }
+
+
+    
+    .hero-img{
+        background-image: linear-gradient(rgba(0,0,0, 0.5), rgba(0,0,0, 0.5)), url("banner-img.jpg");
+        
+        height: 50%;
+        
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        
+        
+    }
+    
+    nav#menubar {  
+        height:2em;  
+        background-color: white;  
+        top:0;
+        left: 0;
+        border-bottom: 4px solid #b1b1b1;  
+        color: black;  
+        line-height: 1.2em;
+        position:fixed;
+        width: 100%;
+        z-index: 1000;
+        
+        
+    }
+    nav#menubar a{
+        text-decoration: none;
+        color: inherit;
+    }
+    
+    @keyframes hover-anim{
+        0%{background-color:rgba(53, 130, 253, 0.28)}
+        100%{background-color:rgba(0,0,0,0.0)}
+    }
+    
+    nav#menubar a:hover{
+        text-decoration: none;
+        color: inherit;
+        animation-name: hover-anim;
+        animation-duration: 3s;
+    }
+    
+    .menu {  
+        width: auto;  
+        float: left;  
+        padding: 0.4em 3em 0.1em 0.7em;  
+        cursor: pointer;
+        z-index: 1000;
+        
+    }
+    
+    .menu ul {  
+        position: absolute;  
+        background-color: black;  
+        color: white;  
+        list-style-type: none;  
+        margin: 0.1em 0 0 0;  
+        padding: 0;  
+        display: none;
+        
+    }
+    
+    .menu ul li {  
+        display: block;   
+        padding: 0.2em;
+    }
+    
+
+.menu:hover ul {  
+    display: block;  
+    margin: 0;   
+    padding: 1em; 
+    } 
+    
+.menu ul li:hover {
+    background-color: #ccf;
+    
+    }
+    
+ul li ul {  
+    position: absolute;  
+    left: -3000px; 
+    width: 120%;
+    
+    }
+    
+ul li:hover ul {  
+    left: 5em;  
+    top: 8px;
+    color: #e3fdff;
+    opacity: 90%;
+    
+    }
+

@@ -1,0 +1,165 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    @keyframes loadin{
+        from{ opacity: 100;
+            visibility: visible;
+            overflow: hidden;
+        }
+        
+        to{opacity: 0%;
+        overflow-y: hidden;}
+    }
+    .loader{
+        background: url("{% static 'home/img/9to5logo.png' %}");
+        background-color: white;
+        background-size: 50%;
+        background-repeat: no-repeat;
+        background-position: center;
+        position: fixed;
+        height: 100%;
+        width: 100%;
+        z-index: 5;
+        
+        animation-name: loadin;
+        animation-duration: 3s;
+        visibility: hidden;
+    }
+
+</style>
+
+
+
+<script>
+$(document).ready(function(){
+$("#internships").css("display","none");
+  $.ajax({
+      url: 'https://raw.githubusercontent.com/gcreddy42/hiring2020/master/README.md',
+      success: function (response) {
+          displayInternships(response)
+      }
+  });
+  $("#internships").css("display","inline");
+});
+
+function getLogo(name) {
+    let url = `https://autocomplete.clearbit.com/v1/companies/suggest?query=${name}`;
+    $.getJSON(url, function (response) {
+        let logo = (typeof(response[0]) !== 'undefined') ? response[0]['logo'] : "{% static 'home/img/whitebackground' %}";
+        $(`.mycard:contains(${name})`).find(`img`).attr(`src`, logo)
+    });
+}
+
+function displayInternships(data) {
+    let lines = data.split('\n');
+
+    for (let line = 0; line < lines.length; line++) {
+
+        if (lines[line].startsWith('|')) {
+            let line_array = lines[line].split('|').slice(1, -1);
+            // 10060 == '❌'
+            // 9989 == '✅'
+            if (line_array[0] !== '' && (line_array[1].trim() === String.fromCodePoint(10060) || line_array[1].trim() === String.fromCodePoint(9989)) ) {
+                let card = document.createElement("div");
+                card.classList.add("card", "col-lg-5", "col-md-9", "col-sm-10", "mx-1", "my-1");
+                // card.classList.add("card", "col-lg-5", "mx-1", "my-1");
+                card.style.maxWidth = "525px"
+                // style="width: 18rem;"
+                card.innerHTML = `<div class="d-flex justify-content-between bd-highlight my-auto mycard">
+                                    <div class="my-auto"><img src='${getLogo(line_array[0])}' height="auto" width="60" alt="Logo for ${line_array[0]}" onerror="this.style.display='none'"/></div>
+                                    <div class="p-2 bd-highlight text-center">
+                                      <h5 class="resizable font-weight-bold">${line_array[0]} </h5>
+                                      <h7 class="resizable">Summer 2020 Internship</h6>
+                                    </div>
+                                    <div class="p-1 badge badge-success align-self-center">Not Cancelled</div>
+                                  </div>`
+
+                switch (line_array[1]) {
+                    case String.fromCodePoint(10060):
+                        card.innerHTML = card.innerHTML.replace("badge-success", "badge-danger")
+                        card.innerHTML = card.innerHTML.replace("Not", "")
+                        card.classList.add("border-danger")
+                        $("#cancelled").append(card)
+                        break;
+                    case String.fromCodePoint(9989):
+                        card.classList.add("border-success")
+                        $("#not-cancelled").append(card)
+                        break;
+                }
+            }
+        }
+    }
+  }
+</script>
+<div class = "loader">
+    <h2><center>Loading...</center></h2>
+</div>
+<div class="pagecontent">
+    <div class="s010 bg-headers py-3 ">
+      <form>
+        <div class="inner-form">
+          <div class="basic-search">
+            <div class="input-field">
+              <input id="search" onkeypress="return event.keyCode != 13" type="text" placeholder="Search for internship statuses..."/>
+              <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+          <div class="container" id="internships">
+            <div class="row justify-content-center mt-3 mb-1">
+                <div class="card border-dark col-lg-6 col-md-9 col-sm-10 mx-1 my-1 text-center" id="cancelled-card">
+                  <h2>Active Internships</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+            <div class="row d-flex justify-content-center col-12" id="not-cancelled"></div>
+            </div>
+            <div class="row justify-content-center mt-3 mb-1">
+                <div class="card border-dark col-lg-6 col-md-9 col-sm-10 mx-1 my-1 text-center" id="not-cancelled-card">
+                  <h2>Cancelled Internships</h2>
+                </div>
+            </div>
+            <div class="row justify-content-center">
+              <div class="row d-flex justify-content-center col-12" id="cancelled"></div>
+            </div>
+          </div>
+          <!-- <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script> -->
+        <script>
+        $(document).ready(function(){
+          $("#search").on("keyup", function(e) {
+            if(e.keyCode == 13) {
+              return false
+            }
+            $(`.card`).css("display","none")
+            $(`#cancelled-card`).css("display","flex")
+            $(`#not-cancelled-card`).css("display","flex")
+            var value = $(this).val().toLowerCase();
+            $(".card").filter(function() {
+              if ($(this).text().toLocaleLowerCase().indexOf(value) > -1 && $(this).text().toLocaleLowerCase().indexOf(value) == 113) {
+                $(this).closest(".card").toggle();
+                // if ($(`#cancelled`)..css("display") == 'none') {
+                //     $(`#cancelled-card`).css("display","none")
+                // }
+                // if ($(`#not-cancelled`).children().css("display") == 'none') {
+                //     $(`#not-cancelled-card`).css("display","none")
+                // }
+              }
+            });
+            if (!$("input").val()) {
+                $( `.card`).css("display", "flex");
+            }
+          });
+        });
+        </script>
+    </div>
+    
+{% endblock content %}

@@ -1,0 +1,348 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+
+<html>
+<div class="pagecontent">
+    <div class="text-white bg-headers text-center text-center">
+    <legend><article>Make your next career move</article></legend>
+
+  </div>
+  <div class="s010 bg-headers">
+    <form>
+      <div class="inner-form">
+        <div class="basic-search">
+          <div class="input-field">
+            <input id="search" type="text" alt="Search by companies, title, skills, etc..." placeholder= "Search by companies, title, skills, etc..."/>
+
+            <a href="javascript:getJobs()">
+              <div class="icon-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+              </div>
+            </a>
+          </div>
+        </div>
+          <button type="button" class="btn btn-danger my-2" data-toggle="collapse" data-target="#advsearch">Advanced Search</button>
+          <!-- <div id="advsearch" class="form-group has-search"> -->
+          <div id="advsearch" class="collapse">
+            <div class="row">
+            <input alt="Position type " id="position" type="text" class="form-control col ml-2" placeholder="Position...">
+            <input alt="Location" id="location" type="text" class="form-control col mx-2" placeholder="Location...">
+            <button onclick="getJobs()" type="button" class="ml-2">Search</button>
+            </div>
+          </div>
+      </div>
+    </form>
+  </div>
+  <div class="row justify-content-center mt-4" id="jobs"></div>
+
+
+<script>
+function getLogo(name) {
+  let url = `https://autocomplete.clearbit.com/v1/companies/suggest?query=${name}`;
+  $.getJSON(url, function (response) {
+      let logo = (typeof(response[0]) !== 'undefined') ? response[0]['logo'] : "{% static 'home/img/9to5logo.png' %}";
+      $(`.mycard:contains(${name})`).find(`img`).attr(`src`, logo)
+
+  });
+}
+
+function createRequest(url, cb) {
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url);
+  xhr.onload = function() {
+    if (xhr.status >= 200 && xhr.status < 400) {
+      var data = JSON.parse(this.response);
+      cb(data)
+    } else {
+      const errorMessage = document.createElement('marquee');
+      errorMessage.textContent = `Gah, it's not working!`;
+    }
+  };
+  xhr.send()
+}
+
+
+
+function getJobs(keywords=$("#search").val(),
+                 position=$("#position").val(),
+                 location=$("#location").val(),
+                 full_time="") {
+
+  document.getElementById("jobs").innerHTML = '';
+
+  console.log(keywords)
+  let url_field_1 = "description=";
+  let url_field_2 = "location=";
+  let url_field_3 = "full_time=";
+
+  let lowerCaseKeywords = keywords.toLowerCase();
+  let rokeywords_arr = lowerCaseKeywords.split(" ");
+
+  for (let i = 0; i < keywords.length; i++) {
+    console.log(rokeywords_arr[i]);
+  }
+
+  if (keywords != "") {
+    let keywords_arr = keywords.split(" ");
+    url_field_1 += keywords_arr.join("+");
+
+    //let rokeywords_arr = keywords.split(" ");
+    //roDescription += rokeywords_arr.join("+");
+  }
+
+  if (position != "") {
+    let position_arr = position.split(" ");
+    if(keywords != "") {
+      url_field_1 = url_field_1 + "+" + position_arr.join("+")
+    } else {
+      url_field_1 += position_arr.join("+")
+    }
+  }
+
+  if (location != "") {
+    let location_arr = location.split(" ");
+    url_field_2 += location_arr.join("+");
+
+  }
+
+  if (full_time != "") {
+    url_field_3 += "on";
+  } else {
+    url_field_3 += "off";
+  }
+
+  // const proxyurl = "https://cors-anywhere.herokuapp.com/";
+  // const url = "https://jobs.github.com/positions.json?utf8=%E2%9C%93&" + url_field_1 + "&" + url_field_2 + "&" + url_field_3;
+  const proxyurl = "https://cors-anywhere.herokuapp.com/";
+  const firstURL = proxyurl + "https://jobs.github.com/positions.json?utf8=%E2%9C%93&" + url_field_1 + "&" + url_field_2 + "&" + url_field_3;
+  secondURL = proxyurl + "https://remoteok.io/api"; // + roDescription;
+
+  //console.log(secondURL);
+
+  createRequest(firstURL, function(firstResponse) {
+      data = firstResponse
+      if (data.length > 40) {
+        data = data.slice(0,40)
+      }
+      for (let i = 0; i < data.length; i++) {
+        var p = document.createElement("p");
+        p.innerHTML = data[i].description;
+
+        var h5 = document.createElement("h5");
+        h5.innerHTML = data[i].title;
+
+        var location = document.createElement("h6");
+        location.innerHTML = data[i].location;
+
+        var company = document.createElement("h6");
+        company.innerHTML = data[i].company;
+
+        var jtype = document.createElement("h6");
+        jtype.innerHTML = data[i].type;
+
+        var siteurl = document.createElement("a");
+        siteurl.innerHTML = data[i].url;
+
+        let card = document.createElement("div");
+        card.classList.add("col-lg-5", "col-md-7", "col-sm-11", "col-xs-12", "mt-2", "d-flex");
+
+        let applySource = ""
+        // console.log(($(data[i].how_to_apply).find("[href]")[0]).href != "undefined");
+        // console.log(($(data[i].how_to_apply).find("[href]")[0]).href == "undefined");
+        try {
+          applySource = ($(data[i].how_to_apply).find("[href]")[0]).href;
+        } catch(err) {
+          applySource = "#"
+        }
+
+        // <p>${p.innerText.substr(0, '1000') + '...'}</p>
+        card.innerHTML = `<div class="card px-2" style="width:100%;text-align:center;">
+                              <div class="media">
+                                <a href ="${siteurl.innerText}"  target="_blank" class="mr-3 align-self-start my-auto">
+                                  <img class="mr-3 align-self-start my-auto" src='${data[i].company_logo}' height="auto" width="60" onerror="this.style.display='none'">
+                                </a>
+                                <div class="media-body card-body align-self-center my-auto">
+                                  <h4 style="font-weight: bolder" class="card-title resizable">${h5.innerText}</h4>
+                                  <h6 class="card-title resizable">${company.innerText}</h6>
+                                  <h6 class="card-title resizable">${location.innerText}</h6>
+                                  <h6 class="card-title resizable">${jtype.innerText}</h6>
+                                </div>
+                                <div class="my-auto">
+                                  <a href="${applySource}" target="_blank" class="btn btn-danger float-right mb-1">Apply</a>
+                                </div>
+                              </div>
+                            </div>`
+        if (h5.innerText !== "undefined") {
+          $("#jobs").append(card)
+        }
+      }
+      createRequest(secondURL, function(secondResponse) {
+        data = secondResponse
+        if (data.length > 40 && keywords == "") {
+          data = data.slice(0,40)
+        }
+
+        if (keywords == "") {
+        for (let i = 0; i < data.length; i++) {
+          var p = document.createElement("p");
+          p.innerHTML = data[i].description;
+
+
+          var h5 = document.createElement("h5");
+          h5.innerHTML = data[i].position;
+
+          var location = document.createElement("h6");
+            // location.innerHTML = data[i].location;
+            location.innerHTML = "Remote";
+
+        var company = document.createElement("h6");
+        company.innerHTML = data[i].company;
+
+          var jtype = document.createElement("h6");
+          // jtype.innerHTML = data[i].type;
+          jtype.innerHTML = "N/A"
+
+          var siteurl = document.createElement("a");
+          siteurl.innerHTML = data[i].url;
+
+          let card = document.createElement("div");
+          card.classList.add("col-lg-5", "col-md-7", "col-sm-11", "col-xs-12", "mt-2", "d-flex");
+
+          let applySource = ""
+          // console.log(($(data[i].how_to_apply).find("[href]")[0]).href != "undefined");
+          // console.log(($(data[i].how_to_apply).find("[href]")[0]).href == "undefined");
+          try {
+            applySource = ($(data[i].how_to_apply).find("[href]")[0]).href;
+          } catch(err) {
+            applySource = "#"
+          }
+
+          // <p>${p.innerText.substr(0, '1000') + '...'}</p>
+          card.innerHTML = `<div class="card px-2" style="width:100%;text-align:center;">
+                                <div class="media">
+                                  <a href ="${siteurl.innerText}"  target="_blank" class="mr-3 align-self-start my-auto">
+                                    <img class="mr-3 align-self-start my-auto" src='${data[i].company_logo}' height="auto" width="60" onerror="this.style.display='none'">
+                                  </a>
+                                 <div class="media-body card-body align-self-center my-auto"> <h4 style="font-weight: bolder" class="card-title resizable">${h5.innerText}</h4>
+                                    <h6 class="card-title resizable">${company.innerText}</h6>
+                                    <h6 class="card-title resizable">${location.innerText}</h6>
+                                    <h6 class="card-title resizable">${jtype.innerText}</h6>
+                                  </div>
+                                  <div class="my-auto">
+                                    <a href="${siteurl.innerText}" target="_blank" class="btn btn-danger float-right mb-1">Apply</a>
+                                  </div>
+                                </div>
+                              </div>`
+          if (h5.innerText !== "undefined") {
+            $("#jobs").append(card)
+          }
+        }
+      }
+      else {
+        console.log("here");
+        for (let i = 0; i < data.length; i++) {
+          var p = document.createElement("p");
+          p.innerHTML = data[i].description;
+
+          if (p.innerHTML.toLowerCase().includes(rokeywords_arr[0]) || p.innerHTML.toLowerCase().includes(rokeywords_arr[1]) || p.innerHTML.toLowerCase().includes(rokeywords_arr[2])) {
+            var h5 = document.createElement("h5");
+            h5.innerHTML = data[i].position;
+
+            var location = document.createElement("h6");
+              // location.innerHTML = data[i].location;
+              location.innerHTML = "Remote";
+
+          var company = document.createElement("h6");
+          company.innerHTML = data[i].company;
+
+            var jtype = document.createElement("h6");
+            // jtype.innerHTML = data[i].type;
+            jtype.innerHTML = "N/A"
+
+            var siteurl = document.createElement("a");
+            siteurl.innerHTML = data[i].url;
+
+            let card = document.createElement("div");
+            card.classList.add("col-lg-5", "col-md-7", "col-sm-11", "col-xs-12", "mt-2", "d-flex");
+
+            let applySource = ""
+            // console.log(($(data[i].how_to_apply).find("[href]")[0]).href != "undefined");
+            // console.log(($(data[i].how_to_apply).find("[href]")[0]).href == "undefined");
+            try {
+              applySource = ($(data[i].how_to_apply).find("[href]")[0]).href;
+            } catch(err) {
+              applySource = "#"
+            }
+
+            // <p>${p.innerText.substr(0, '1000') + '...'}</p>
+            card.innerHTML = `<div class="card px-2" style="width:100%;text-align:center;">
+                                  <div class="media">
+                                    <a href ="${siteurl.innerText}"  target="_blank" class="mr-3 align-self-start my-auto">
+                                      <img class="mr-3 align-self-start my-auto" src='${data[i].company_logo}' height="auto" width="60" onerror="this.style.display='none'">
+                                    </a>
+                                   <div class="media-body card-body align-self-center my-auto"> <h4 style="font-weight: bolder" class="card-title resizable">${h5.innerText}</h4>
+                                      <h6 class="card-title resizable">${company.innerText}</h6>
+                                      <h6 class="card-title resizable">${location.innerText}</h6>
+                                      <h6 class="card-title resizable">${jtype.innerText}</h6>
+                                    </div>
+                                    <div class="my-auto">
+                                      <a href="${siteurl.innerText}" target="_blank" class="btn btn-danger float-right mb-1">Apply</a>
+                                    </div>
+                                  </div>
+                                </div>`
+            if (h5.innerText !== "undefined") {
+              $("#jobs").append(card)
+            }
+          }
+
+
+        }
+      }
+      });
+  });
+}
+</script>
+
+  <script>
+  $.ajaxPrefilter( function( options ) {
+    if ( options.crossDomain ) {
+      var newData = {};
+      // Copy the options.data object to the newData.data property.
+      // We need to do this because javascript doesn't deep-copy variables by default.
+      newData.data = $.extend({}, options.data);
+      newData.url = options.url;
+
+      // Reset the options object - we'll re-populate in the following lines.
+      options = {};
+
+      // Set the proxy URL
+      options.url = "https://cors-anywhere.herokuapp.com/";
+      options.data = $.param(newData);
+      options.crossDomain = false;
+    }
+  });
+    $(document).ready(function() {
+        getJobs();
+      $("#search").keyup(function(e) {
+        if (e.keyCode == 13) {
+          getJobs();
+        }
+      })
+      $("#position").keyup(function(e) {
+        if (e.keyCode == 13) {
+          // e.preventDefault();
+          getJobs();
+        }
+      })
+      $("#location").keyup(function(e) {
+        if (e.keyCode == 13) {
+          // e.preventDefault();
+          getJobs();
+        }
+      })
+    });
+  </script>
+{% endblock content %}

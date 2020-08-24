@@ -1,0 +1,79 @@
+{% extends "home/base.html" %}
+{% load static %}
+{% block content %}
+<!-- Header -->
+<div class="pagecontent">
+<header class="bg-headers text-center py-2 mb-4">
+  <div class="container">
+    <h1 class="font-weight-light text-white">Meet the Team</h1>
+  </div>
+</header>
+
+<!-- Page Content -->
+<div class="container">
+  <div class="row">
+    <!-- Team Member 1 -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-0 shadow">
+        <img src="{% static 'home/img/jonathansaenz.jpeg' %}" class="card-img-top" alt="...">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Jonathan Saenz</h5>
+          <div class="card-text text-black-50">Frontend/Backend</div>
+        </div>
+      </div>
+    </div>
+    <!-- Team Member 2 -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-0 shadow">
+        <img src="{% static 'home/img/drewspooner.jpg' %}" class="card-img-top" alt="...">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Drew Spooner</h5>
+          <div class="card-text text-black-50">Frontend/UI</div>
+        </div>
+      </div>
+    </div>
+    <!-- Team Member 3 -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-0 shadow">
+        <img src="{% static 'home/img/foreman.png' %}" class="card-img-top" alt="...">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Foreman McCauley</h5>
+          <div class="card-text text-black-50">Frontend/Testing</div>
+        </div>
+      </div>
+    </div>
+    <!-- Team Member 4 -->
+    <div class="col-xl-3 col-md-6 mb-4">
+      <div class="card border-0 shadow">
+        <img src="{% static 'home/img/carter.jpg' %}" class="card-img-top" alt="...">
+        <div class="card-body text-center">
+          <h5 class="card-title mb-0">Carter Mitchell</h5>
+          <div class="card-text text-black-50">Project Manager</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.row -->
+
+<div class="container">
+  <div class="row">
+      <div class="col text-center bg-headers">
+          <h1 class="text-center">About Us</h1>
+      </div>
+      <p class="bg-white mt-2">Our team has come together with a diverse skill set which looks to finish the project in a timely and efficient manner. With frequent meetings and an agile methodology, the project will move forward in a manner that will keep the team on track. To work efficiently, we’ve split the responsibilities along the general lines of backend, design, reports and written logs, and unit or usability testing. The team also splits up the general coding such that each member can specialize in a singular API alongside their external work. This allows the scope of the project to be wholly manageable as no one member is overly burdened, and the integration of the different pieces can flow smoothly as each piece is completed. 
+       </p>
+      <div class="col text-center bg-headers">
+          <h1 class="text-center">How Does It Work</h1>
+      </div>
+      <p class="bg-white mt-2">Job searches are often tedious and at times unnecessarily frustrating, and the COVID-19 outbreak has worsened the job search situation. The goal of this platform is to enable users to continue to search for jobs and internships, even during the chaos caused by COVID-19. A user will be able to search by location, filter out canceled internships, or even find remote positions. 
+      </p>
+           <div class="col text-center bg-headers">
+    <h1 class="text-center">Universal Accessibility</h1>
+      </div>
+      <p class="bg-white mt-2">
+        Our team believes that any user should be able to use our base site, regardless of ability. This is why we have implemented concepts of universal accessibility on this site. The aim is that users who are visually impaired can still have a positive experience on our site. This includes flexible website design that works even when a user needs to zoom in. Alt text is included wherever necessary to improve the experience for those using screenreaders. As well, all text fields are surrounded by backgrounds with maximum contrast to be color-blind friendly.
+       </p>
+  </div>
+</div>
+    </div>
+{% endblock content %}
